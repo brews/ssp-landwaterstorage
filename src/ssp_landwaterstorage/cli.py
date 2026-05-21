@@ -1,6 +1,7 @@
 """
 Logic for the CLI.
 """
+
 import logging
 
 import click
@@ -11,44 +12,41 @@ logger = logging.getLogger(__name__)
 logging.basicConfig(level=logging.INFO)
 
 
-@click.group(invoke_without_command=True)
+@click.group(
+    invoke_without_command=True,
+    context_settings={"auto_envvar_prefix": "SSP_LANDWATERSTORAGE"},
+)
 @click.option(
     "--pipeline-id",
-    envvar="SSP_LANDWATERSTORAGE_PIPELINE_ID",
     help="Unique identifier for this instance of the module.",
     required=True,
 )
 @click.option(
     "--output-gslr-file",
-    envvar="SSP_LANDWATERSTORAGE_OUTPUT_GSLR_FILE",
     help="Path to write output global SLR file.",
     required=True,
     type=str,
 )
 @click.option(
     "--output-lslr-file",
-    envvar="SSP_LANDWATERSTORAGE_OUTPUT_LSLR_FILE",
     help="Path to write output local SLR file.",
     required=True,
     type=str,
 )
 @click.option(
     "--pophist-file",
-    envvar="SSP_LANDWATERSTORAGE_POPHIST_FILE",
     help="Path to the historical population file.",
     required=True,
     type=str,
 )
 @click.option(
     "--reservoir-file",
-    envvar="SSP_LANDWATERSTORAGE_RESERVOIR_FILE",
     help="Path to the groundwater impoundment file.",
     required=True,
     type=str,
 )
 @click.option(
     "--popscen-file",
-    envvar="SSP_LANDWATERSTORAGE_POPSCEN_FILE",
     help="Path to the population scenario file.",
     required=True,
     type=str,
@@ -56,7 +54,6 @@ logging.basicConfig(level=logging.INFO)
 @click.option(
     "gwd_files",
     "--gwd-file",
-    envvar="SSP_LANDWATERSTORAGE_GWD_FILES",
     help="Path to groundwater depletion file.",
     multiple=True,
     type=str,
@@ -64,14 +61,12 @@ logging.basicConfig(level=logging.INFO)
 )
 @click.option(
     "--fp-file",
-    envvar="SSP_LANDWATERSTORAGE_FP_FILE",
     help="Path to fingerprint file.",
     type=str,
     required=True,
 )
 @click.option(
     "--location-file",
-    envvar="SSP_LANDWATERSTORAGE_LOCATION_FILE",
     help="File containing name, id, lat, and lon of points for localization.",
     type=str,
     required=True,
@@ -79,87 +74,74 @@ logging.basicConfig(level=logging.INFO)
 )
 @click.option(
     "--scenario",
-    envvar="SSP_LANDWATERSTORAGE_SCENARIO",
     help="Use RCP or SSP scenario.",
     default="rcp85",
 )
 @click.option(
     "--dotriangular",
-    envvar="SSP_LANDWATERSTORAGE_DOTRIANGULAR",
     help="Use triangular distribution for GWD.",
     default=False,
 )
 @click.option(
     "--baseyear",
-    envvar="SSP_LANDWATERSTORAGE_BASEYEAR",
     help="Base year to which projections are centered.",
     default=2000,
     type=click.IntRange(2000, 2010),
 )
 @click.option(
     "--pyear-start",
-    envvar="SSP_LANDWATERSTORAGE_PYEAR_START",
     help="Year for which projections start.",
     default=2000,
     type=click.IntRange(min=2000),
 )
 @click.option(
     "--pyear-end",
-    envvar="SSP_LANDWATERSTORAGE_PYEAR_END",
     help="Year for which projections end.",
     default=2100,
     type=click.IntRange(max=2300),
 )
 @click.option(
     "--pyear-step",
-    envvar="SSP_LANDWATERSTORAGE_PYEAR_STEP",
     help="Step size in years between start and end at which projections are produced.",
     default=10,
     type=click.IntRange(min=1),
 )
 @click.option(
     "--nsamps",
-    envvar="SSP_LANDWATERSTORAGE_NSAMPS",
     help="Number of samples to generate.",
     default=20000,
 )
 @click.option(
     "--seed",
-    envvar="SSP_LANDWATERSTORAGE_SEED",
     help="Seed value for random number generator.",
     default=1234,
 )
 @click.option(
     "--dcyear-start",
-    envvar="SSP_LANDWATERSTORAGE_DCYEAR_START",
     help="Year in which dam correction application is started.",
     default=2020,
 )
 @click.option(
     "--dcyear-end",
-    envvar="SSP_LANDWATERSTORAGE_DCYEAR_END",
     help="Year in which dam correction application is ended.",
     default=2040,
 )
 @click.option(
     "--dcrate-lo",
-    envvar="SSP_LANDWATERSTORAGE_DCRATE_LO",
     help="Lower bound of dam correction rate.",
     default=0.0,
 )
 @click.option(
     "--dcrate-hi",
-    envvar="SSP_LANDWATERSTORAGE_DCRATE_HI",
     help="Upper bound of dam correction rate.",
     default=0.0,
 )
 @click.option(
     "--chunksize",
-    envvar="SSP_LANDWATERSTORAGE_CHUNKSIZE",
     help="Number of locations to process at a time.",
     default=50,
 )
-@click.option("--debug/--no-debug", default=False, envvar="SSP_LANDWATERSTORAGE_DEBUG")
+@click.option("--debug/--no-debug", default=False)
 def main(
     pophist_file,
     reservoir_file,
@@ -192,7 +174,6 @@ def main(
         logging.root.setLevel(logging.DEBUG)
     else:
         logging.root.setLevel(logging.INFO)
-
 
     logger.info("Hello from ssp-landwaterstorage!")
 
