@@ -18,6 +18,7 @@ dependencies = [
 
 [project.scripts]
 ssp-landwaterstorage = "ssp_landwaterstorage:cli.main"
+ssp-lws = "ssp_landwaterstorage:cli.main"
 
 [build-system]
 requires = ["hatchling"]
