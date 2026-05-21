@@ -14,7 +14,10 @@ logging.basicConfig(level=logging.INFO)
 
 @click.group(
     invoke_without_command=True,
-    context_settings={"auto_envvar_prefix": "SSP_LANDWATERSTORAGE"},
+    context_settings={
+        "auto_envvar_prefix": "SSP_LANDWATERSTORAGE",
+        "show_default": True,
+    },
 )
 @click.option(
     "--pipeline-id",
