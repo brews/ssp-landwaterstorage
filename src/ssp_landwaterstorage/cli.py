@@ -1,13 +1,17 @@
 """
 Logic for the CLI.
 """
+import logging
 
 import click
 
 from ssp_landwaterstorage.service import project_landwaterstorage
 
+logger = logging.getLogger(__name__)
+logging.basicConfig(level=logging.INFO)
 
-@click.command()
+
+@click.group(invoke_without_command=True)
 @click.option(
     "--pipeline-id",
     envvar="SSP_LANDWATERSTORAGE_PIPELINE_ID",
@@ -155,6 +159,7 @@ from ssp_landwaterstorage.service import project_landwaterstorage
     help="Number of locations to process at a time.",
     default=50,
 )
+@click.option("--debug/--no-debug", default=False, envvar="SSP_LANDWATERSTORAGE_DEBUG")
 def main(
     pophist_file,
     reservoir_file,
@@ -178,11 +183,19 @@ def main(
     chunksize,
     output_gslr_file,
     output_lslr_file,
+    debug,
 ) -> None:
     """
     Project groundwater depletion and dam impoundment contributions to sea level. See IPCC AR6 WG1 9.6.3.2.6.
     """
-    click.echo("Hello from ssp-landwaterstorage!")
+    if debug:
+        logging.root.setLevel(logging.DEBUG)
+    else:
+        logging.root.setLevel(logging.INFO)
+
+
+    logger.info("Hello from ssp-landwaterstorage!")
+
     project_landwaterstorage(
         pophist_file,
         reservoir_file,
@@ -207,3 +220,5 @@ def main(
         output_gslr_file,
         output_lslr_file,
     )
+
+    logger.info("ssp-landwaterstorage complete")
