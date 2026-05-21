@@ -20,7 +20,6 @@ def project_landwaterstorage(
     reservoir_file,
     popscen_file,
     gwd_files,
-    fp_file,
     scenario,
     dotriangular,
     baseyear,
@@ -34,12 +33,10 @@ def project_landwaterstorage(
     dcyear_end,
     dcrate_lo,
     dcrate_hi,
-    location_file,
-    chunksize,
-    output_gslr_file,
-    output_lslr_file,
-) -> None:
+    output_gslr_file=None,
+):
     """Project landwaterstorage"""
+
     pophist = read_population_history(pophist_file)
     dams = read_reservoir_impoundment(reservoir_file)
     gwd = read_groundwater_depletion(gwd_files)
@@ -75,23 +72,41 @@ def project_landwaterstorage(
         dcrate_lo,
         dcrate_hi,
     )
-    write_gslr(
-        output_gslr_file,
-        targyears=out_conf["targyears"],
-        n_samps=nsamps,
-        pipeline_id=pipeline_id,
-        baseyear=baseyear,
-        scenario=scenario,
-        lwssamps=gslr,
-    )
 
+    if output_gslr_file is not None:
+        write_gslr(
+            output_gslr_file,
+            targyears=out_conf["targyears"],
+            n_samps=nsamps,
+            pipeline_id=pipeline_id,
+            baseyear=baseyear,
+            scenario=scenario,
+            lwssamps=gslr,
+        )
+
+    return gslr, out_conf
+
+
+def localize_projection(
+    gslr,
+    *,
+    preprocess_conf,
+    baseyear,
+    scenario,
+    fp_file,
+    location_file,
+    chunksize,
+    nsamps,
+    output_lslr_file,
+):
+    """Localize global landwaterstorage projection"""
     sites = read_locations(location_file)
     fingerprints = read_fingerprints(fp_file)
     lslr = postprocess(gslr, fingerprints, sites, chunksize)
     write_lslr(
         output_lslr_file,
         local_sl=lslr,
-        targyears=out_conf["targyears"],
+        targyears=preprocess_conf["targyears"],
         n_samps=nsamps,
         baseyear=baseyear,
         scenario=scenario,

@@ -304,4 +304,3 @@ def write_lslr(
             }
         },
     )
-    pass
